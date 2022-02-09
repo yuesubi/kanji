@@ -28,5 +28,5 @@ class Manager:
             cls._curr_menu.quit()
             cls._curr_menu.frame.place_forget()
 
-        cls._curr_menu = MENUS_MAP[menu](cls._tk)
+        cls._curr_menu = MENUS_MAP[menu](cls._tk, cls)
         cls._curr_menu.frame.place(x=0, y=0, width=640, height=460)

@@ -18,7 +18,7 @@ class App:
 
         self.tk.config(bg=shm.bg)
 
-        Manager.init(self.tk, "exam_menu")
+        Manager.init(self.tk, "entry_menu")
 
     def run(self) -> None:
         self.tk.mainloop()
