@@ -1,0 +1,21 @@
+{
+    "params": {
+        "per_day": {
+            "dec": 0.2,
+            "dec_lim": 0.2,
+            "new": 2,
+            "max": 20
+        },
+
+        "confirm_amount": 2,
+        "amount": 0
+    },
+
+    "kanjis": {
+        "19": {
+            "updated": "2021-01-19",
+            "memorised": 0,
+            "known": false
+        }
+    }
+}
