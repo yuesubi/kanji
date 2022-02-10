@@ -4,6 +4,7 @@ from tkinter import *
 
 from menu import Menu
 from widgets.draw_surf import DrawSurf
+from data import Data
 
 import res.assets as assets
 import res.font as font
@@ -16,13 +17,13 @@ class ExamMenu(Menu):
 
         self.frame = Frame(tk, bg=shm.bg)
 
-        self.title_l = Label(self.frame, text="Draw the kanji of:", font=font.en(20), fg=shm.fg, bg=shm.orange)
+        self.title_l = Label(self.frame, text="Draw the kanji of:", font=font.en(20), fg=shm.fg, bg=shm.bg)
         self.title_l.place(x=20, y=20)
 
-        self.draw_d = DrawSurf(self.frame, width=235, height=235, bg=shm.orange)
+        self.draw_d = DrawSurf(self.frame, width=235, height=235, bg=shm.bg)
         self.draw_d.place(x=20, y=155)
 
-        self.answer_kanji_l = Label(self.frame, text=" ", font=font.jp(120), fg=shm.fg, bg=shm.orange)
+        self.answer_kanji_l = Label(self.frame, text=" ", font=font.jp(120), fg=shm.fg, bg=shm.bg)
         self.answer_kanji_l.place(x=270, y=155)
 
         self.kuns =   []
@@ -30,29 +31,36 @@ class ExamMenu(Menu):
         self.sounds = []
 
         # Bottom buttons
-        self.leave_b = Button(self.frame, text="leave", font=font.en(12), fg=shm.fg, bg=shm.orange, command=lambda: manager.switch("entry_menu"), relief='flat')
+        self.leave_b = Button(self.frame, text="leave", font=font.en(12), fg=shm.fg, bg=shm.bg, command=lambda: manager.switch("entry_menu"), relief='flat')
         self.leave_b.place(x=20, y=405)
 
-        self.erase_b = Button(self.frame, text="erase", font=font.en(12), fg=shm.fg, bg=shm.orange, command=lambda: self.draw_d.clear(), relief='flat')
+        self.erase_b = Button(self.frame, text="erase", font=font.en(12), fg=shm.fg, bg=shm.bg, command=lambda: self.draw_d.clear(), relief='flat')
         self.erase_b.place(x=120, y=405)
 
-        self.check_b = Button(self.frame, text="check", font=font.en(12), fg=shm.fg, bg=shm.orange, command=lambda: self.load_answer(), relief='flat')
+        self.check_b = Button(self.frame, text="check", font=font.en(12), fg=shm.fg, bg=shm.bg, command=lambda: self.load_answer(), relief='flat')
         self.check_b.place(x=220, y=405)
 
-        self.wrong_b = Button(self.frame, text="wrong", font=font.en(12), fg=shm.fg, bg=shm.orange, command=lambda: manager.switch("entry_menu"), relief='flat')
+        self.wrong_b = Button(self.frame, text="wrong", font=font.en(12), fg=shm.fg, bg=shm.bg, command=lambda: manager.switch("entry_menu"), relief='flat')
         self.wrong_b.place(x=320, y=405)
 
-        self.correct_b = Button(self.frame, text="correct", font=font.en(12), fg=shm.fg, bg=shm.orange, command=lambda: manager.switch("entry_menu"), relief='flat')
+        self.correct_b = Button(self.frame, text="correct", font=font.en(12), fg=shm.fg, bg=shm.bg, command=lambda: manager.switch("entry_menu"), relief='flat')
         self.correct_b.place(x=400, y=405)
+
+        self.questions  = Data.get_kanji_to_see()
+        self.curr_kanji = Data.get_kanji_by_id(self.questions[0].id)
+
+        self.curr_question = {
+            "kun": self.curr_kanji[4],
+            "on" : self.curr_kanji[3]
+        }
+        self.curr_answer   = {
+            "kanji" : self.curr_kanji[1],
+            "sounds": self.curr_kanji[2],
+        }
 
         self.load_question()
 
     def load_question(self):
-        question = {
-            "kun": "moon; month",
-            "on": "moon; month; Monday; month (of the year)",
-        }
-
         # Clear the prononciatiobns of the kanji
         for sound in self.sounds:
             sound.place_forget()
@@ -67,33 +75,28 @@ class ExamMenu(Menu):
         self.ons.clear()
 
         # Translation of the kun readings
-        for k, kun in enumerate(question["kun"].split(sep='; ')):
+        for k, kun in enumerate(self.curr_question["kun"].split(sep='; ')):
             self.kuns.append(
-                Label(self.frame, text=kun, font=font.en(12), fg=shm.fg, bg=shm.orange)
+                Label(self.frame, text=kun, font=font.en(12), fg=shm.fg, bg=shm.bg)
             )
             self.kuns[-1].place(x=20, y=70 + 30 * k)
 
         
         # Translation of the on readings
-        for o, on in enumerate(question["on"].split(sep='; ')):
+        for o, on in enumerate(self.curr_question["on"].split(sep='; ')):
             self.ons.append(
-                Label(self.frame, text=on, font=font.en(12), fg=shm.comment, bg=shm.orange)
+                Label(self.frame, text=on, font=font.en(12), fg=shm.comment, bg=shm.bg)
             )
             self.ons[-1].place(x=320, y=70 + 30 * o)
 
     def load_answer(self):
-        answer = {
-            "kanji": '月',
-            "sounds": "ゲツ、ガツ、つき",
-        }
-        
         # Kanji
-        self.answer_kanji_l.config(text=answer["kanji"])
+        self.answer_kanji_l.config(text=self.curr_answer["kanji"])
 
         # Prononciation
-        for s, sound in enumerate(answer["sounds"].split(sep='、')):
+        for s, sound in enumerate(self.curr_answer["sounds"].split(sep='、')):
             self.sounds.append(
-                Label(self.frame, text=sound, font=font.jp(16), fg=shm.fg, bg=shm.orange)
+                Label(self.frame, text=sound, font=font.jp(16), fg=shm.fg, bg=shm.bg)
             )
             self.sounds[-1].place(x=450, y=155 + 40 * s)
 

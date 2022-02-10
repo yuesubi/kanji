@@ -42,15 +42,37 @@ class Data:
         date = time.time()
 
         for k in data["kanjis"].keys():
-            kanji = data["kanji"][k]
-            if (date - kanji[updated]) / 3600 > pow(2, kanji["memorised"]) and not kanji["known"]:
+            kanji = data["kanjis"][k]
+            if (date - kanji["updated"]) / 3600 > pow(2, kanji["memorised"]) and not kanji["known"]:
                 to_see.append( Kanji(k, -1, kanji["memorised"], False) )
 
         return to_see
 
     @classmethod
-    def save_achivements(cls, data) -> None:
-        pass
+    def save_achivements(cls, achivements) -> None:
+        data = dict()
+
+        with open(cls.ACHIVEMENT_DATA, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
+        for kanji in achivements:
+            data["kanjis"][kanji.id] = {
+                "updated": kanji.updated,
+                "memorised": kanji.memorised,
+                "known": kanji.known
+            }
+
+        with open(cls.ACHIVEMENT_DATA, 'w', encoding='utf-8') as file:
+            json.dump(data, file)
+
+    @classmethod
+    def get_kanji_by_id(cls, p_id) -> list:
+        with open(cls.RAW_DATA, 'r', encoding='utf-8') as file:
+            for line in csv.reader(file, delimiter=';'):
+                if line[0] == p_id:
+                    return line
+        
+        return list()
 
 
 # Format of the "achivement data"
