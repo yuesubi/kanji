@@ -1,4 +1,15 @@
-import os, csv, json
+import csv
+import json
+import os
+import time
+
+
+class Kanji:
+    def __init__(self, p_id, updated, memorised, known):
+        self.id: str = p_id
+        self.updated: int = updated
+        self.memorised: int = memorised
+        self.known: bool = known
 
 
 class Data:
@@ -23,12 +34,23 @@ class Data:
     @classmethod
     def get_kanji_to_see(cls) -> list:
         data = dict()
+        to_see = list()
 
         with open(cls.ACHIVEMENT_DATA, 'r', encoding='utf-8') as file:
             data = json.load(file)
 
-        for kanji in data["kanjis"]:
-            pass
+        date = time.time()
+
+        for k in data["kanjis"].keys():
+            kanji = data["kanji"][k]
+            if (date - kanji[updated]) / 3600 > pow(2, kanji["memorised"]) and not kanji["known"]:
+                to_see.append( Kanji(k, -1, kanji["memorised"], False) )
+
+        return to_see
+
+    @classmethod
+    def save_achivements(cls, data) -> None:
+        pass
 
 
 # Format of the "achivement data"
