@@ -43,7 +43,7 @@ class Data:
 
         for k in data["kanjis"].keys():
             kanji = data["kanjis"][k]
-            if (date - kanji["updated"]) / 3600 > pow(2, kanji["memorised"]) and not kanji["known"]:
+            if (date - kanji["updated"]) / 900 > pow(2, kanji["memorised"]) and not kanji["known"]:
                 to_see.append( Kanji(k, -1, kanji["memorised"], False) )
 
         return to_see

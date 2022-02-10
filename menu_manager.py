@@ -5,11 +5,13 @@ from typing import Any
 # from menu import Menu
 from entry_menu import EntryMenu
 from exam_menu import ExamMenu
+from recap_menu import RecapMenu
 
 
 MENUS_MAP: dict[str, Any] = {
     "entry_menu": EntryMenu,
-    "exam_menu": ExamMenu
+    "exam_menu": ExamMenu,
+    "recap_menu": RecapMenu
 }
 
 

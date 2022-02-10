@@ -1,10 +1,11 @@
 # -*- encode: utf-8 -*-
 
+import time
 from tkinter import *
 
 from menu import Menu
 from widgets.draw_surf import DrawSurf
-from data import Data
+from data import Data, Kanji
 
 import res.assets as assets
 import res.font as font
@@ -14,6 +15,7 @@ import res.shm as shm
 class ExamMenu(Menu):
     def __init__(self, tk, manager):
         super(Menu, self).__init__()
+        self.manager = manager
 
         self.frame = Frame(tk, bg=shm.bg)
 
@@ -47,6 +49,10 @@ class ExamMenu(Menu):
         self.correct_b.place(x=400, y=405)
 
         self.questions  = Data.get_kanji_to_see()
+        if len(self.questions) == 0:
+            self.manager.switch("entry_menu")
+            return
+
         self.curr_kanji = Data.get_kanji_by_id(self.questions[0].id)
 
         self.curr_question = {
@@ -58,13 +64,17 @@ class ExamMenu(Menu):
             "sounds": self.curr_kanji[2],
         }
 
-        self.achivements = dict()
+        self.achivements = list()
         self.quest_num = 0
 
         self.load_question()
 
     def load_next_question(self):
         self.quest_num += 1
+
+        if not (self.quest_num < len(self.questions)):
+            self.finish()
+            return
 
         self.curr_kanji = Data.get_kanji_by_id(self.questions[self.quest_num].id)
 
@@ -82,11 +92,25 @@ class ExamMenu(Menu):
 
         self.load_question()
 
+        self.check_b.config(state='normal')
+
+    def finish(self):
+        Data.save_achivements(self.achivements)
+        self.manager.switch("entry_menu")
+
     def correct(self):
+        self.achive(1)
         self.load_next_question()
 
     def wrong(self):
+        self.achive(-1)
         self.load_next_question()
+
+    def achive(self, mem_added, known=False):
+        kj = self.questions[self.quest_num]
+        self.achivements.append(
+            Kanji(kj.id, int(time.time()), max(0, kj.memorised + mem_added), known)
+        )
 
     def load_question(self):
         # Clear the prononciatiobns of the kanji
@@ -117,6 +141,9 @@ class ExamMenu(Menu):
             )
             self.ons[-1].place(x=320, y=70 + 30 * o)
 
+        self.wrong_b.config(state='disabled')
+        self.correct_b.config(state='disabled')
+
     def load_answer(self):
         # Kanji
         self.answer_kanji_l.config(text=self.curr_answer["kanji"])
@@ -127,6 +154,12 @@ class ExamMenu(Menu):
                 Label(self.frame, text=sound, font=font.jp(16), fg=shm.fg, bg=shm.bg)
             )
             self.sounds[-1].place(x=450, y=155 + 40 * s)
+
+        
+        self.wrong_b.config(state='normal')
+        self.correct_b.config(state='normal')
+        
+        self.check_b.config(state='disabled')
 
 
 #         self.known_b = Button(self.button_f, text="known", font=font(14), bd=0, highlightthickness=0)
