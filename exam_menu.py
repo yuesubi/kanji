@@ -1,5 +1,6 @@
 # -*- encode: utf-8 -*-
 
+import os
 import time
 from tkinter import *
 
@@ -49,8 +50,12 @@ class ExamMenu(Menu):
         self.correct_b.place(x=400, y=405)
 
         self.questions  = Data.get_kanji_to_see()
+        
+        if f"{time.asctime().split(sep=' ')[1]} {time.asctime().split(sep=' ')[2]}" != Data.get_last_time():
+            self.questions.extend( Data.get_new_kanji(2) )
+
         if len(self.questions) == 0:
-            self.manager.switch("entry_menu")
+            self.manager.switch("recap_menu")
             return
 
         self.curr_kanji = Data.get_kanji_by_id(self.questions[0].id)
@@ -96,7 +101,8 @@ class ExamMenu(Menu):
 
     def finish(self):
         Data.save_achivements(self.achivements)
-        self.manager.switch("entry_menu")
+        Data.save_time()
+        self.manager.switch("recap_menu")
 
     def correct(self):
         self.achive(1)

@@ -43,10 +43,34 @@ class Data:
 
         for k in data["kanjis"].keys():
             kanji = data["kanjis"][k]
-            if (date - kanji["updated"]) / 900 > pow(2, kanji["memorised"]) and not kanji["known"]:
+            if (date - kanji["updated"]) / 225 > pow(2, kanji["memorised"]) and not kanji["known"]:
                 to_see.append( Kanji(k, -1, kanji["memorised"], False) )
 
+        # TODO: give data in frequency order
+
         return to_see
+
+    @classmethod
+    def get_kanji_comming_up(cls) -> list:
+        data = dict()
+        comming_up = list()
+
+        with open(cls.ACHIVEMENT_DATA, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
+        date = time.time()
+
+        for k in data["kanjis"].keys():
+            kanji = data["kanjis"][k]
+            if not kanji["known"]:
+                comming_up.append( Kanji(k,
+                    (pow(2, kanji["memorised"]) * 225) + date - kanji["updated"],
+                    kanji["memorised"], False)
+                )
+
+        # TODO: give data in frequency order
+        
+        return comming_up
 
     @classmethod
     def save_achivements(cls, achivements) -> None:
@@ -73,6 +97,44 @@ class Data:
                     return line
         
         return list()
+
+    @classmethod
+    def get_new_kanji(cls, amount) -> list:
+        existing_ids = list()
+
+        with open(cls.ACHIVEMENT_DATA, 'r', encoding='utf-8') as file:
+            existing_ids = json.load(file)["kanjis"].keys()
+
+        new_kanji = []
+
+        with open(cls.RAW_DATA, 'r', encoding='utf-8') as file:
+            data = list(csv.reader(file, delimiter=';'))[1:]
+            data.sort(key=lambda line: int(line[5]) + int(line[6]) , reverse=True)
+
+            i = 0
+            while len(new_kanji) < amount and i < 10e4:  # i < 10e5 condition is for if one day i go threw all 2K+ kanji
+                if data[i][0] not in existing_ids:
+                    new_kanji.append(
+                        Kanji(data[i][0], 0, -1, False)
+                    )
+                i += 1
+        
+        return new_kanji
+
+    @classmethod
+    def save_time(cls) -> None:
+        data = dict()
+        with open(cls.ACHIVEMENT_DATA, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
+        data["params"]["last_time"] = f"{time.asctime().split(sep=' ')[1]} {time.asctime().split(sep=' ')[2]}" 
+        with open(cls.ACHIVEMENT_DATA, 'w', encoding='utf-8') as file:
+            json.dump(data, file)
+
+    @classmethod
+    def get_last_time(cls) -> str:
+        with open(cls.ACHIVEMENT_DATA, 'r', encoding='utf-8') as file:
+            return json.load(file)["params"]["last_time"]
 
 
 # Format of the "achivement data"
