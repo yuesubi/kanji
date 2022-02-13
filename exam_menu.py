@@ -3,6 +3,7 @@
 import os
 import time
 from tkinter import *
+from tkinter.messagebox import *
 
 from menu import Menu
 from widgets.draw_surf import DrawSurf
@@ -49,6 +50,9 @@ class ExamMenu(Menu):
         self.correct_b = Button(self.frame, text="correct", font=font.en(12), fg=shm.fg, bg=shm.bg, command=self.correct, relief='flat')
         self.correct_b.place(x=400, y=405)
 
+        self.known_b = Button(self.frame, text="known", font=font.en(12), fg=shm.fg, bg=shm.bg, command=self.known, relief='flat')
+        self.known_b.place(x=500, y=405)
+
         self.questions  = Data.get_kanji_to_see()
         
         if f"{time.asctime().split(sep=' ')[1]} {time.asctime().split(sep=' ')[2]}" != Data.get_last_time():
@@ -73,6 +77,13 @@ class ExamMenu(Menu):
         self.quest_num = 0
 
         self.load_question()
+
+    def known(self):
+        sure = askyesno("Do you really know this kanji ?", "The kanji will no longer appear as it is asumed you know it.\nDo you want to proced ?")
+
+        if sure:
+            self.achive(0, True)
+            self.load_next_question()
 
     def load_next_question(self):
         self.quest_num += 1
@@ -149,6 +160,7 @@ class ExamMenu(Menu):
 
         self.wrong_b.config(state='disabled')
         self.correct_b.config(state='disabled')
+        self.known_b.config(state='disabled')
 
     def load_answer(self):
         # Kanji
@@ -164,6 +176,7 @@ class ExamMenu(Menu):
         
         self.wrong_b.config(state='normal')
         self.correct_b.config(state='normal')
+        self.known_b.config(state='normal')
         
         self.check_b.config(state='disabled')
 

@@ -1,7 +1,8 @@
+import os
 import csv
 import json
-import os
 import time
+import random
 
 
 class Kanji:
@@ -63,10 +64,8 @@ class Data:
         for k in data["kanjis"].keys():
             kanji = data["kanjis"][k]
             if not kanji["known"]:
-                comming_up.append( Kanji(k,
-                    (pow(2, kanji["memorised"]) * 225) + date - kanji["updated"],
-                    kanji["memorised"], False)
-                )
+                time_to_wait = (pow(2, kanji["memorised"])) * 225 - (date - kanji["updated"])
+                comming_up.append( Kanji(k, time_to_wait, kanji["memorised"], False) )
 
         # TODO: give data in frequency order
         
@@ -135,6 +134,12 @@ class Data:
     def get_last_time(cls) -> str:
         with open(cls.ACHIVEMENT_DATA, 'r', encoding='utf-8') as file:
             return json.load(file)["params"]["last_time"]
+
+    @classmethod
+    def get_random_kanji(cls) -> str:
+        with open(cls.RAW_DATA, 'r', encoding='utf-8') as file:
+            data = list(csv.reader(file, delimiter=';'))[1:]
+            return data[random.randint(0, len(data) - 1)][1]
 
 
 # Format of the "achivement data"

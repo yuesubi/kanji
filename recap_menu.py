@@ -48,10 +48,11 @@ class RecapMenu(Menu):
 
         kanjis = Data.get_kanji_comming_up()
         for k, kj in enumerate(sorted(kanjis, key=lambda e: e.updated)):
-            self.comming_up_l.append(
-                Label(self.frame, text=f"{Data.get_kanji_by_id(kj.id)[1]}, grade: {kj.memorised}, next {readable_time(kj.updated)}", font=font.jp(12), fg=shm.fg, bg=shm.bg)
-            )
-            self.comming_up_l[-1].place(x=20, y=90 + 30 * k)
+            if k < 10:
+                self.comming_up_l.append(
+                    Label(self.frame, text=f"{Data.get_kanji_by_id(kj.id)[1]}, grade: {kj.memorised}, next {readable_time(kj.updated)}", font=font.jp(12), fg=shm.fg, bg=shm.bg)
+                )
+                self.comming_up_l[-1].place(x=20, y=90 + 30 * k)
 
         self.leave_b = Button(self.frame, text="leave", font=font.en(12), fg=shm.fg, bg=shm.bg, command=lambda: manager.switch("entry_menu"), relief='flat')
         self.leave_b.place(x=20, y=405)
