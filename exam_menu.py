@@ -55,10 +55,12 @@ class ExamMenu(Menu):
 
         self.questions  = Data.get_kanji_to_see()
         
-        if f"{time.asctime().split(sep=' ')[1]} {time.asctime().split(sep=' ')[2]}" != Data.get_last_time():
+        if f"{time.asctime().split(sep=' ')[1]} {time.asctime().split(sep=' ')[2]}" != Data.get_last_time() and self.questions < 11:
             self.questions.extend( Data.get_new_kanji(2) )
 
-        if len(self.questions) == 0:
+        if len(self.questions) > 19:
+            self.questions = self.questions[0:20]
+        elif len(self.questions) == 0:
             self.manager.switch("recap_menu")
             return
 
